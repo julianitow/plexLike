@@ -31,6 +31,7 @@ class Server {
         void testRoute(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
         void testAgainRoute(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
         void signupRoute(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
+        void loginRoute(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
     
     public:
         static Server* getInstance(Pistache::Address);

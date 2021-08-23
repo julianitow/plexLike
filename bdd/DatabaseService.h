@@ -12,6 +12,7 @@ class DatabaseService {
         static void setConn(std::shared_ptr<sql::Connection>);
         static User getUserById(int id);
         static bool insertUser(User);
+        static User getUser(User);
 };
 
 #endif

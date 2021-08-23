@@ -39,6 +39,7 @@ void Server::setupRoutes() {
     Routes::Get(this->router, "/testAgain/:param", Routes::bind(&Server::testAgainRoute, this));
     Routes::Get(this->router, "/content", Routes::bind(&Server::listDirRoute, this));
     Routes::Get(this->router, "/signup/:username/:password", Routes::bind(&Server::signupRoute, this));
+    Routes::Get(this->router, "/login/:username/:passwors", Routes::bind(&Server::loginRoute, this));
 }
 
 void Server::testRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
@@ -57,6 +58,23 @@ void Server::signupRoute(const Pistache::Rest::Request& request, Pistache::Http:
         } else {
             response.send(Pistache::Http::Code::Bad_Request, "Bad request");
         }
+    }
+}
+
+void Server::loginRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    if(request.hasParam(":username") && request.hasParam(":password")) {
+        std::string username = request.param(":username").as<std::string>();
+        std::string password = request.param(":password").as<std::string>();
+        std::cout << username << "," << password << std::endl;
+        User user = User(username.c_str(), password.c_str());
+        User userRes = DatabaseService::getUser(user);
+
+        if(userRes._username() != username.c_str() || userRes._password() != password.c_str()){
+            response.send(Pistache::Http::Code::Bad_Request, "Bad request");
+            return;
+        }
+        
+        response.send(Pistache::Http::Code::Ok, "User logged in successfully");
     }
 }
 

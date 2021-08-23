@@ -7,4 +7,6 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(100),
     password BINARY(20),
     PRIMARY KEY(id)
-)
+);
+
+ALTER TABLE users ADD CONSTRAINT uc_namepass UNIQUE(username, password);
