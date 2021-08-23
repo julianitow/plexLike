@@ -8,7 +8,14 @@ project(PlexLike VERSION 0.0 LANGUAGES C CXX)
 find_package(PkgConfig)
 pkg_check_modules(Pistache REQUIRED IMPORTED_TARGET libpistache)
 
-add_executable(${PROJECT_NAME} main.cpp Server.cpp)
+add_executable(${PROJECT_NAME} 
+    main.cpp 
+    Server.cpp 
+    FilesServices.cpp 
+    bdd/Database.cpp 
+    bdd/DatabaseService.cpp
+    Entities/User.cpp
+)
 
 set_target_properties(${PROJECT_NAME} 
     PROPERTIES 
@@ -17,7 +24,14 @@ set_target_properties(${PROJECT_NAME}
         CXX_EXTENSIONS NO
 )
 
+target_link_directories(${PROJECT_NAME}
+    PUBLIC
+        /usr/local/lib64/mariadb/
+)
+
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC
         PkgConfig::Pistache
+        pthread
+        mariadbcpp
 )

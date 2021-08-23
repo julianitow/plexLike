@@ -1,7 +1,24 @@
 #include "Server.h"
 
+Server* Server::instance;
+
 Server::Server(Pistache::Address addr) {
     this->httpEndpoint = std::make_shared<Pistache::Http::Endpoint>(addr);
+    this->usersConnected = std::map<int, User*>();
+
+    Database::setDb("plexLike");
+    Database::setHost("localhost");
+    Database::setUser("plexLike");
+    Database::setPassword("plexLike");
+
+    DatabaseService::setConn(Database::getInstance());
+}
+
+Server* Server::getInstance(Pistache::Address addr) {
+    if(Server::instance == nullptr) {
+        Server::instance = new Server(addr);
+    }
+    return Server::instance;
 }
 
 void Server::init(size_t thr) {
@@ -20,10 +37,36 @@ void Server::setupRoutes() {
     using namespace Pistache::Rest;
     Routes::Get(this->router, "/test", Routes::bind(&Server::testRoute, this));
     Routes::Get(this->router, "/testAgain/:param", Routes::bind(&Server::testAgainRoute, this));
+    Routes::Get(this->router, "/content", Routes::bind(&Server::listDirRoute, this));
+    Routes::Get(this->router, "/signup/:username/:password", Routes::bind(&Server::signupRoute, this));
 }
 
 void Server::testRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    
     response.send(Pistache::Http::Code::Ok, "Access testRoute Success");
+}
+
+void Server::signupRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    if(request.hasParam(":username") && request.hasParam(":password")) {
+        std::string username = request.param(":username").as<std::string>();
+        std::string password = request.param(":password").as<std::string>();
+        std::cout << username << "," << password << std::endl;
+        User user = User(username.c_str(), password.c_str());
+        if(DatabaseService::insertUser(user)){
+            response.send(Pistache::Http::Code::Ok, "User inserted successfully");
+        } else {
+            response.send(Pistache::Http::Code::Bad_Request, "Bad request");
+        }
+    }
+}
+
+void Server::listDirRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    std::list<std::filesystem::directory_entry> files = FilesServices::listDirContent("/home/julianitow/");
+    /*char* jsonStr = "{";
+    for (const auto &file : files) {
+        const char* path =         
+    }*/
+    response.send(Pistache::Http::Code::Ok, "Ok");
 }
 
 void Server::testAgainRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
@@ -33,4 +76,18 @@ void Server::testAgainRoute(const Pistache::Rest::Request& request, Pistache::Ht
         std::cout << "Request param: " << value << std::endl;
     }
     response.send(Pistache::Http::Code::Ok, "Access testAgainRoute Success");
+}
+
+void Server::execInThread(Server* server, int thr) {
+    server->init(thr);
+    server->start();
+}
+
+User Server::createUser(const char* username, const char* password) {
+
+}
+
+void Server::shutdown(int signal) {
+    Server::instance->httpEndpoint->shutdown();
+    std::cout << "Server shutdown called on signal:" << signal << std::endl;
 }
