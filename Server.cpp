@@ -39,7 +39,7 @@ void Server::setupRoutes() {
     Routes::Get(this->router, "/testAgain/:param", Routes::bind(&Server::testAgainRoute, this));
     Routes::Get(this->router, "/content", Routes::bind(&Server::listDirRoute, this));
     Routes::Get(this->router, "/signup/:username/:password", Routes::bind(&Server::signupRoute, this));
-    Routes::Get(this->router, "/login/:username/:passwors", Routes::bind(&Server::loginRoute, this));
+    Routes::Get(this->router, "/login/:username/:password", Routes::bind(&Server::loginRoute, this));
 }
 
 void Server::testRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
