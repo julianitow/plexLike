@@ -23,7 +23,8 @@ Server* Server::getInstance(Pistache::Address addr) {
 
 void Server::init(size_t thr) {
     auto opts = Pistache::Http::Endpoint::options()
-                                        .threads(static_cast<int>(thr));
+                    .threads(static_cast<int>(thr))
+                    .flags(Pistache::Tcp::Options::ReuseAddr);
     this->httpEndpoint->init(opts);
     this->setupRoutes();
 }
@@ -39,7 +40,7 @@ void Server::setupRoutes() {
     Routes::Get(this->router, "/testAgain/:param", Routes::bind(&Server::testAgainRoute, this));
     Routes::Get(this->router, "/content", Routes::bind(&Server::listDirRoute, this));
     Routes::Get(this->router, "/signup/:username/:password", Routes::bind(&Server::signupRoute, this));
-    Routes::Get(this->router, "/login/:username/:password", Routes::bind(&Server::loginRoute, this));
+    Routes::Get(this->router, "/signin/:username/:password", Routes::bind(&Server::loginRoute, this));
 }
 
 void Server::testRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
