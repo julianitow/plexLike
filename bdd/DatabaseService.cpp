@@ -21,7 +21,7 @@ bool DatabaseService::insertUser(User user) {
 
 User DatabaseService::getUser(User user) {
     try {
-        std::unique_ptr<sql::PreparedStatement> stmnt(DatabaseService::conn->prepareStatement("SELECT * FROM users WHERE username = ? AND WHERE password = ?"));
+        std::unique_ptr<sql::PreparedStatement> stmnt(DatabaseService::conn->prepareStatement("SELECT * FROM users WHERE username = ? AND password = ?"));
         stmnt->setString(1, user._username());
         stmnt->setString(2, user._password());
         sql::ResultSet* res = stmnt->executeQuery();

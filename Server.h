@@ -9,6 +9,8 @@
 #include "bdd/DatabaseService.h"
 #include "Entities/User.h"
 
+#include "Media/MediaManager/MediaManager.h"
+
 #include "FilesServices.h"
 
 class Server {
@@ -20,6 +22,8 @@ class Server {
         static Server* instance;
 
         std::map<int, User*> usersConnected;
+
+        MediaManager mediaManager;
 
         explicit Server(Pistache::Address);
 
@@ -39,6 +43,8 @@ class Server {
         void start();
         static void shutdown(int);
         static void execInThread(Server*, int = 2);
+
+        void runMediaManager();
 };
 
 #endif

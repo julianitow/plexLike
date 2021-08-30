@@ -1,16 +1,16 @@
 #include "User.h"
 
-User::User(const char* username, const char* password) {
+User::User(std::string username, std::string password) {
     this->username = username;
     this->password = password;
     this->logged = false;
 }
 
-const char* User::_username() {
+std::string User::_username() {
     return this->username;
 }
 
-const char* User::_password() {
+std::string User::_password() {
     return this->password;
 }
 

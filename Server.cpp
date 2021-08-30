@@ -48,6 +48,8 @@ void Server::testRoute(const Pistache::Rest::Request& request, Pistache::Http::R
     response.send(Pistache::Http::Code::Ok, "Access testRoute Success");
 }
 
+//TODO: HASH PASSWORD && LOGIN
+
 void Server::signupRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     if(request.hasParam(":username") && request.hasParam(":password")) {
         std::string username = request.param(":username").as<std::string>();
@@ -69,13 +71,14 @@ void Server::loginRoute(const Pistache::Rest::Request& request, Pistache::Http::
         std::cout << username << "," << password << std::endl;
         User user = User(username.c_str(), password.c_str());
         User userRes = DatabaseService::getUser(user);
-
-        if(userRes._username() != username.c_str() || userRes._password() != password.c_str()){
-            response.send(Pistache::Http::Code::Bad_Request, "Bad request");
+        std::cout << user._password() << ',' << user._username() << std::endl;
+        // FIXME
+        if(!userRes._username().compare(username) || !userRes._password().compare(password)){
+            response.send(Pistache::Http::Code::Forbidden, "Access denied");
             return;
         }
         
-        response.send(Pistache::Http::Code::Ok, "User logged in successfully");
+        response.send(Pistache::Http::Code::Ok, "Access granted");
     }
 }
 
@@ -109,4 +112,13 @@ User Server::createUser(const char* username, const char* password) {
 void Server::shutdown(int signal) {
     Server::instance->httpEndpoint->shutdown();
     std::cout << "Server shutdown called on signal:" << signal << std::endl;
+}
+
+void Server::runMediaManager() {
+    this->mediaManager = MediaManager();
+
+    Library lib = Library();
+    lib.addPath("/home/julianitow/Téléchargements");
+    lib.scanForFiles();
+
 }

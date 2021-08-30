@@ -15,6 +15,10 @@ add_executable(${PROJECT_NAME}
     bdd/Database.cpp 
     bdd/DatabaseService.cpp
     Entities/User.cpp
+    Media/Media.cpp
+    Media/Movie.cpp
+    Media/Library/Library.cpp
+    Media/MediaManager/MediaManager.cpp
 )
 
 set_target_properties(${PROJECT_NAME} 

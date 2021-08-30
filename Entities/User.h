@@ -1,15 +1,18 @@
 #ifndef USER_H
 #define USER_H
+
+#include <iostream>
+
 class User {
     private:
-        const char* username;
-        const char* password;
+        std::string username;
+        std::string password;
         bool logged;
     
     public:
-        User(const char*, const char*);
-        const char* _username();
-        const char* _password();
+        User(std::string, std::string);
+        std::string _username();
+        std::string _password();
         void setLogged(bool);
         bool isLoggedIn();
 };
