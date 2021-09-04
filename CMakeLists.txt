@@ -8,6 +8,8 @@ project(PlexLike VERSION 0.0 LANGUAGES C CXX)
 find_package(PkgConfig)
 pkg_check_modules(Pistache REQUIRED IMPORTED_TARGET libpistache)
 
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
 add_executable(${PROJECT_NAME} 
     main.cpp 
     Server.cpp 
@@ -36,6 +38,7 @@ target_link_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC
         PkgConfig::Pistache
+        nlohmann_json::nlohmann_json
         pthread
         mariadbcpp
         magic
