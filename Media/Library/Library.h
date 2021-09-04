@@ -19,6 +19,7 @@ class Library {
         std::string title;
         std::list<Media> contents;
         std::list<std::string> paths;
+        std::list<std::string> videoFiles;
 };
 
 #endif
