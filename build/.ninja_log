@@ -1,8 +1,0 @@
-# ninja log v5
-1	2457	1630356629542197489	CMakeFiles/PlexLike.dir/Server.cpp.o	e24da23cb6a0fcbc
-2457	2693	1630356629778198411	PlexLike	91da4c4319fda7b4
-1	1240	1630242214530634240	CMakeFiles/PlexLike.dir/bdd/Database.cpp.o	45ae3bd304e91e39
-1	1971	1630347253536401463	CMakeFiles/PlexLike.dir/main.cpp.o	6b32aa9422e35d57
-0	1088	1630242214378633813	CMakeFiles/PlexLike.dir/FilesServices.cpp.o	485a3a1746b2dd1
-2	820	1630347252388394308	CMakeFiles/PlexLike.dir/bdd/DatabaseService.cpp.o	db78c090f030ffc9
-2	399	1630347251964391661	CMakeFiles/PlexLike.dir/Entities/User.cpp.o	ebb656d1d07e9c85

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <list>
 #include <filesystem>
+#include <magic.h>
 #include "../Media.h"
 
 class Library {

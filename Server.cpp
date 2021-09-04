@@ -112,6 +112,7 @@ User Server::createUser(const char* username, const char* password) {
 void Server::shutdown(int signal) {
     Server::instance->httpEndpoint->shutdown();
     std::cout << "Server shutdown called on signal:" << signal << std::endl;
+    exit(signal);
 }
 
 void Server::runMediaManager() {

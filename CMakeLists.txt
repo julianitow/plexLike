@@ -38,4 +38,5 @@ target_link_libraries(${PROJECT_NAME}
         PkgConfig::Pistache
         pthread
         mariadbcpp
+        magic
 )

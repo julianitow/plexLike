@@ -19,8 +19,19 @@ void Library::addPath(std::string path) {
 void Library::scanForFiles() {
     //TODO filesystem scan
     for(std::string& path : this->paths) {
+        
         for(auto& filePath : std::filesystem::directory_iterator(path)){
-            std::cout << filePath << std::endl;
+            //TODO check if file is video 
+            magic_t myt = magic_open(MAGIC_CONTINUE | MAGIC_ERROR | MAGIC_DEBUG | MAGIC_MIME);
+            magic_load(myt, NULL);
+            auto file = magic_file(myt, NULL);
+            if (file == nullptr) {
+                std::cerr << magic_error(myt) << std::endl;
+            } else {
+                std::cout << file << ' ' << file << std::endl;
+            }
+            std::cout << filePath << ": " << file << std::endl;
+            magic_close(myt);
         }
     }
 }
