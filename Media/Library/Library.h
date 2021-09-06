@@ -10,13 +10,15 @@
 class Library {
     public:
         Library();
+        Library(std::string);
+        std::string _name();
         void addMedia(Media);
         void addPath(std::string);
         std::list<Media> listMedia();
         void scanForFiles();
         bool persistDb(); //TODO persists data to db
     private:
-        std::string title;
+        std::string name;
         std::list<Media> contents;
         std::list<std::string> paths;
         std::list<std::string> videoFiles;

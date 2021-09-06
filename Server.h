@@ -5,6 +5,8 @@
 #include <pistache/http.h>
 #include <pistache/router.h>
 
+#include <nlohmann/json.hpp>
+
 #include "bdd/Database.h"
 #include "bdd/DatabaseService.h"
 #include "Entities/User.h"
@@ -25,6 +27,8 @@ class Server {
 
         MediaManager mediaManager;
 
+        std::list<Library*> libraries;
+
         explicit Server(Pistache::Address);
 
         void setupRoutes();
@@ -36,7 +40,8 @@ class Server {
         void testAgainRoute(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
         void signupRoute(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
         void loginRoute(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
-    
+        void streamRoute(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
+        void libraryContent(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter);
     public:
         static Server* getInstance(Pistache::Address);
         void init(size_t = 2);

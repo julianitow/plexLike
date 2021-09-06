@@ -1,4 +1,6 @@
 .vscode/
+_deps/json-build/
+_deps/json-subbuild/
 CMakeFiles/
 build/
 cmake_install.cmake

@@ -27,6 +27,8 @@ void Server::init(size_t thr) {
                     .flags(Pistache::Tcp::Options::ReuseAddr);
     this->httpEndpoint->init(opts);
     this->setupRoutes();
+    //FIXME Temporary for testing
+    this->runMediaManager();
 }
 
 void Server::start() {
@@ -36,16 +38,10 @@ void Server::start() {
 
 void Server::setupRoutes() {
     using namespace Pistache::Rest;
-    Routes::Get(this->router, "/test", Routes::bind(&Server::testRoute, this));
-    Routes::Get(this->router, "/testAgain/:param", Routes::bind(&Server::testAgainRoute, this));
-    Routes::Get(this->router, "/content", Routes::bind(&Server::listDirRoute, this));
     Routes::Get(this->router, "/signup/:username/:password", Routes::bind(&Server::signupRoute, this));
     Routes::Get(this->router, "/signin/:username/:password", Routes::bind(&Server::loginRoute, this));
-}
-
-void Server::testRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
-    
-    response.send(Pistache::Http::Code::Ok, "Access testRoute Success");
+    Routes::Get(this->router, "/libraries/:library/", Routes::bind(&Server::libraryContent, this));
+    Routes::Get(this->router, "/libraries/:library/media/:media/stream", Routes::bind(&Server::streamRoute, this));
 }
 
 //TODO: HASH PASSWORD && LOGIN
@@ -65,6 +61,7 @@ void Server::signupRoute(const Pistache::Rest::Request& request, Pistache::Http:
 }
 
 void Server::loginRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    //TODO if no parameters sent in request, response something
     if(request.hasParam(":username") && request.hasParam(":password")) {
         std::string username = request.param(":username").as<std::string>();
         std::string password = request.param(":password").as<std::string>();
@@ -82,44 +79,66 @@ void Server::loginRoute(const Pistache::Rest::Request& request, Pistache::Http::
     }
 }
 
-void Server::listDirRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
-    std::list<std::filesystem::directory_entry> files = FilesServices::listDirContent("/home/julianitow/");
-    /*char* jsonStr = "{";
-    for (const auto &file : files) {
-        const char* path =         
-    }*/
-    response.send(Pistache::Http::Code::Ok, "Ok");
+void Server::runMediaManager() {
+    this->mediaManager = MediaManager();
+
+    Library* movies = new Library("Movies");
+    this->libraries.push_back(movies);
+    movies->addPath("/media/julianitow/Samsung_T5/Films");
+    movies->scanForFiles();
+    
 }
 
-void Server::testAgainRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
-    if(request.hasParam(":param")) {
-        auto val = request.param(":param");
-        int value = val.as<int>();
-        std::cout << "Request param: " << value << std::endl;
+void Server::streamRoute(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    if(!request.hasParam(":library") && !request.hasParam(":media")) return;
+    std::string library = request.param(":library").as<std::string>();
+    std::string mediaTitle = request.param(":media").as<std::string>();
+    std::string mediaPath;
+    try {
+        mediaTitle = mediaTitle.replace(mediaTitle.begin(), mediaTitle.end(), "%20", " ");
+    } catch (std::system_error& err) {
+        std::cerr << err.what() << std::endl;
     }
-    response.send(Pistache::Http::Code::Ok, "Access testAgainRoute Success");
+    std::cout << mediaTitle << std::endl;
+    for (Library* lib : this->libraries) {
+        if(lib->_name().compare(library) == 0) {
+            for(Media media : lib->listMedia()) {
+                std::cout << media._file().path().filename() << std::endl;
+                //TODO Use of media title unsted of media file
+                if(media._file().path().compare(mediaTitle) == 0){
+                    response.send(Pistache::Http::Code::Found);
+                }
+            }
+        }
+    }
+
+    response.send(Pistache::Http::Code::Ok);
 }
 
-void Server::execInThread(Server* server, int thr) {
-    server->init(thr);
-    server->start();
-}
-
-User Server::createUser(const char* username, const char* password) {
-
+void Server::libraryContent(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    if(request.hasParam(":library")) {
+        std::string nameReq = request.param(":library").as<std::string>();
+        for(Library* lib : this->libraries){
+            std::cout << lib->_name() << std::endl;
+            if(lib->_name().compare(nameReq) == 0) {
+                //TODO json object with all contents of lib inside 
+                nlohmann::json moviesJson;
+                std::cout << lib->listMedia().size() << std::endl;
+                for(Media media: lib->listMedia()) {
+                    nlohmann::json mediaJson;
+                    mediaJson["file"] = media._file().path();
+                    moviesJson[media._file().path()] = mediaJson;
+                }
+                response.headers().add<Pistache::Http::Header::ContentType>("application/json");
+                response.send(Pistache::Http::Code::Ok, moviesJson.dump());
+            }
+        }
+    }
+    response.send(Pistache::Http::Code::Bad_Request, "Missing library name");
 }
 
 void Server::shutdown(int signal) {
     Server::instance->httpEndpoint->shutdown();
     std::cout << "Server shutdown called on signal:" << signal << std::endl;
     exit(signal);
-}
-
-void Server::runMediaManager() {
-    this->mediaManager = MediaManager();
-
-    Library lib = Library();
-    lib.addPath("/home/julianitow/Téléchargements");
-    lib.scanForFiles();
-
 }

@@ -17,7 +17,6 @@ int main() {
 
     Server* server = Server::getInstance(addr);
     server->init(thr);
-    server->runMediaManager();
     try {
         server->start();
         //FIXME For testing purposes only
